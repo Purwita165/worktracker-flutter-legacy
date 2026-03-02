@@ -213,7 +213,7 @@ class _TodoPageState extends State<TodoPage> {
                     const SizedBox(height: 12),
 
                     // =====================
-                    // SO & REF (OPTIONAL, SEJAJAR)
+                    // SO & REF (OPTIONAL, SEJAJAR)clear
                     // =====================
                     TextField(
                       controller: soController,
