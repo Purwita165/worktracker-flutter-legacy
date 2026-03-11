@@ -393,6 +393,50 @@ class _TodoPageState extends State<TodoPage> {
                         });
                       },
                     ),
+
+                    const SizedBox(height: 16),
+
+                    /*
+============================================================
+DUE DATE PICKER
+============================================================
+*/
+                    Row(
+                      children: [
+                        const Text(
+                          "Due Date:",
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Text(
+                          dueDate == null
+                              ? "Not set"
+                              : "${dueDate!.year}-${dueDate!.month.toString().padLeft(2, '0')}-${dueDate!.day.toString().padLeft(2, '0')}",
+                        ),
+
+                        const Spacer(),
+
+                        TextButton(
+                          child: const Text("Pick Date"),
+                          onPressed: () async {
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: dueDate ?? DateTime.now(),
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime(2100),
+                            );
+
+                            if (picked != null) {
+                              setStateDialog(() {
+                                dueDate = picked;
+                              });
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
