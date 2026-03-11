@@ -627,6 +627,8 @@ DUE DATE FILTER DIALOG
 
     final completedCount = todos.where((t) => t.isDone).length;
 
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
     return Scaffold(
       appBar: null,
 
@@ -844,7 +846,28 @@ DUE DATE FILTER DIALOG
                                   ],
                                 ),
 
-                                const SizedBox(height: 6),
+                                const SizedBox(height: 8),
+
+                                if (isMobile)
+                                  Row(
+                                    children: [
+                                      TextButton(
+                                        onPressed: () {
+                                          openTaskDialog(todo: todo);
+                                        },
+                                        child: const Text("Edit"),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () {
+                                          confirmDelete(todo);
+                                        },
+                                      ),
+                                    ],
+                                  ),
 
                                 LinearProgressIndicator(
                                   value: (todo.progress ?? 0) / 100,
@@ -856,27 +879,28 @@ DUE DATE FILTER DIALOG
                             /*
   EDIT + DELETE BUTTON
   */
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    openTaskDialog(todo: todo);
-                                  },
-                                  child: const Text("Edit"),
-                                ),
-
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                            trailing: isMobile
+                                ? null
+                                : Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextButton(
+                                        onPressed: () {
+                                          openTaskDialog(todo: todo);
+                                        },
+                                        child: const Text("Edit"),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () {
+                                          confirmDelete(todo);
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                  onPressed: () {
-                                    confirmDelete(todo);
-                                  },
-                                ),
-                              ],
-                            ),
                           ),
                         ),
                       );
