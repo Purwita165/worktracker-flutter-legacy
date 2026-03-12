@@ -44,7 +44,7 @@ class _TodoPageState extends State<TodoPage> {
   ============================================================
   */
 
-  String filterMode = "all";
+  String filterMode = "active";
   String? priorityFilter;
   String? dueFilter;
 
