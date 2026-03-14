@@ -1,53 +1,35 @@
-# purwita_flutter_project
+WorkTracker
 
-## Flutter SQLite Todo App
+WorkTracker is a lightweight task management application built with Flutter and SQLite.
 
-A simple Todo List application built with Flutter using SQLite for local data persistence.  
-This project was developed as part of a **Flutter Bootcamp assignment**.
+The app is designed to help users plan, track, and execute tasks with progress tracking, priority levels, and simple task management.
+
+Features
+
+• Create and manage tasks
+• Track task progress
+• Set task priorities (Low / Medium / High)
+• Mark tasks as completed
+• Store data locally using SQLite
+• Clean and simple productivity interface
+
+Technology Stack
+
+• Flutter
+• Dart
+• SQLite (sqflite)
+
+Project Purpose
+
+This project is part of a personal learning journey in Flutter development, focusing on building practical productivity tools with local data persistence.
+
+Future Improvements
+
+• Context-based task grouping
+• Deadline notifications
+• Task analytics
+• Mobile APK release
 
 ---
 
-## Features
-- Add Todo
-- Mark Todo as Done
-- Delete Todo
-- Local data persistence using SQLite
-
----
-
-## Tech Stack
-- Flutter
-- sqflite
-- sqflite_common_ffi (for desktop)
-
----
-
-## Platform Support
-This application is intended to run on **Desktop (Windows)**.
-
-SQLite is implemented using `sqflite`, which is supported on mobile and desktop platforms.  
-❌ **Flutter Web (Chrome / Edge) is not supported** in this project.
-
----
-
-## How to Run
-
-### Prerequisites
-- Flutter SDK installed
-- Windows OS
-
-### Steps
-1. Clone this repository
-2. Install dependencies:
-   ```bash
-   flutter pub get
-
-3. Run the application on Windows:
-
-    flutter run -d windows
-
-Notes
-
-Please do not run this project on Chrome or Edge, as SQLite is not supported on Flutter Web.
-
-This project focuses on implementing basic CRUD operations with SQLite.
+Built with Flutter.
