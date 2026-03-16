@@ -25,6 +25,7 @@ import 'package:flutter/material.dart';
 import '../models/todo.dart';
 import '../database/db_helper.dart';
 import 'package:intl/intl.dart';
+import '../widgets/todo_card.dart';
 
 enum FilterType { all, active, completed, priority, due }
 
@@ -173,6 +174,7 @@ Tidak disimpan ke database (V1).
       progress: progress,
       taskDate: DateTime.now(),
       isDone: false,
+      createdAt: DateTime.now(),
     );
 
     await dbHelper.insertTodo(todo);
@@ -342,8 +344,14 @@ dueDate = null
 
       if (todo.isDone) {
         todo.completedAt = DateTime.now();
+
+        // hitung duration dari createdAt sampai sekarang
+        if (todo.createdAt != null) {
+          todo.duration = DateTime.now().difference(todo.createdAt!).inHours;
+        }
       } else {
         todo.completedAt = null;
+        todo.duration = null;
       }
     });
 
@@ -355,10 +363,6 @@ dueDate = null
       todo.isDone ? 1 : 0,
       todo.completedAt?.toIso8601String(),
     );
-
-    await loadTodos();
-
-    print("TOTAL TODOS AFTER LOAD: ${todos.length}");
   }
 
   String getDuration(Todo todo) {
@@ -624,7 +628,7 @@ Mengambil task yang ditandai sebagai fokus hari ini.
   ============================================================
   */
 
-  void openTaskDialog({Todo? todo}) {
+  void openTaskDialog(Todo? todo) {
     if (todo != null) {
       descController.text = todo.description;
       workController.text = todo.workId ?? "";
@@ -1189,7 +1193,7 @@ Menampilkan task yang dipilih sebagai fokus hari ini.
                           children: [
                             IconButton(
                               icon: const Icon(Icons.edit, size: 18),
-                              onPressed: () => openTaskDialog(todo: todo),
+                              onPressed: () => openTaskDialog(todo),
                             ),
 
                             IconButton(
@@ -1253,181 +1257,16 @@ Menampilkan task yang dipilih sebagai fokus hari ini.
                           todo.dueDate!.isBefore(DateTime.now()) &&
                           !todo.isDone;
 
-                      return Card(
-                        color: Colors.white,
-                        elevation: 2,
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 2,
-                          horizontal: 6,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Checkbox(
-                                    value: todo.isDone,
-                                    onChanged: (_) => toggleTodo(todo),
-                                  ),
-
-                                  GestureDetector(
-                                    onTap: () => toggleFocus(todo),
-                                    child: Icon(
-                                      todayFocusIds.contains(todo.id)
-                                          ? Icons.star
-                                          : Icons.star_border,
-                                      size: 18,
-                                      color: Colors.orange,
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(width: 10),
-
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      todo.description,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: isOverdue
-                                            ? Colors.red
-                                            : Colors.black,
-                                        decoration: todo.isDone
-                                            ? TextDecoration.lineThrough
-                                            : null,
-                                      ),
-                                    ),
-
-                                    const SizedBox(height: 4),
-
-                                    // BARIS 1
-                                    Text.rich(
-                                      TextSpan(
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.black,
-                                        ),
-                                        children: [
-                                          TextSpan(
-                                            text: "WorkID: ${todo.workId}   ",
-                                          ),
-                                          TextSpan(text: "Ref: ${todo.ref}"),
-                                        ],
-                                      ),
-                                    ),
-
-                                    const SizedBox(height: 2),
-
-                                    // BARIS 2
-                                    if (todo.isDone)
-                                      Text.rich(
-                                        TextSpan(
-                                          style: const TextStyle(fontSize: 13),
-                                          children: [
-                                            if (todo.workId?.isNotEmpty ??
-                                                false)
-                                              TextSpan(
-                                                text:
-                                                    "WorkID: ${todo.workId}   ",
-                                              ),
-
-                                            if (todo.ref?.isNotEmpty ?? false)
-                                              TextSpan(
-                                                text: "Ref: ${todo.ref}   ",
-                                              ),
-
-                                            TextSpan(
-                                              text:
-                                                  "Created: ${formatDate(todo.taskDate)}   ",
-                                            ),
-
-                                            TextSpan(
-                                              text:
-                                                  "Completed: ${formatDate(todo.completedAt)}   ",
-                                            ),
-
-                                            TextSpan(
-                                              text:
-                                                  "Duration: ${getDuration(todo)}",
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    else
-                                      Text.rich(
-                                        TextSpan(
-                                          style: const TextStyle(fontSize: 13),
-                                          children: [
-                                            if (todo.workId?.isNotEmpty ??
-                                                false)
-                                              TextSpan(
-                                                text:
-                                                    "WorkID: ${todo.workId}   ",
-                                              ),
-
-                                            if (todo.ref?.isNotEmpty ?? false)
-                                              TextSpan(
-                                                text: "Ref: ${todo.ref}   ",
-                                              ),
-
-                                            TextSpan(
-                                              text:
-                                                  "Priority: ${priorityLabels[todo.priority]}   ",
-                                              style: TextStyle(
-                                                color: getPriorityColor(
-                                                  todo.priority,
-                                                ),
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-
-                                            TextSpan(
-                                              text:
-                                                  "Progress: ${todo.progress}%   ",
-                                            ),
-
-                                            if (todo.dueDate != null)
-                                              TextSpan(
-                                                text:
-                                                    "Due: ${formatDate(todo.dueDate)}",
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-
-                              Column(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.edit, size: 18),
-                                    onPressed: () => openTaskDialog(todo: todo),
-                                  ),
-
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      size: 18,
-                                      color: Colors.red,
-                                    ),
-                                    onPressed: () => confirmDelete(todo),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                      return TodoCard(
+                        todo: todo,
+                        isOverdue: isOverdue,
+                        toggleTodo: toggleTodo,
+                        toggleFocus: toggleFocus,
+                        confirmDelete: confirmDelete,
+                        openTaskDialog: openTaskDialog,
+                        priorityLabels: priorityLabels,
+                        getPriorityColor: getPriorityColor,
+                        formatDate: formatDate,
                       );
                     },
                   ),
@@ -1445,7 +1284,7 @@ Menampilkan task yang dipilih sebagai fokus hari ini.
               foregroundColor: Colors.white,
 
               onPressed: () {
-                openTaskDialog();
+                openTaskDialog(null);
               },
             ),
     );

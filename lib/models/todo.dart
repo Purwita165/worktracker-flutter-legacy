@@ -210,8 +210,9 @@ COMPLETION DATE
 ============================
 Tanggal task selesai.
 */
-
+  DateTime? createdAt;
   DateTime? completedAt;
+  int? duration;
 
   /*
   ========================================================
@@ -242,6 +243,8 @@ Tanggal task selesai.
     this.dueDate,
     this.progress,
     required this.taskDate,
+    this.createdAt,
+    this.duration,
     this.completedAt,
     this.isDone = false,
   });
