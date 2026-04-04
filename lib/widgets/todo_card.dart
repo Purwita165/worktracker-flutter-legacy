@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/todo.dart';
+import '../services/todo_logic.dart';
 
 String formatDuration(int hours) {
   if (hours < 24) {
@@ -86,7 +87,7 @@ class TodoCard extends StatelessWidget {
                     todo.description,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: isOverdue ? Colors.red : Colors.black,
+                      color: TodoLogic.getDescriptionColor(todo),
                       decoration: todo.isDone
                           ? TextDecoration.lineThrough
                           : null,
@@ -144,6 +145,10 @@ class TodoCard extends StatelessWidget {
                               ),
 
                               TextSpan(text: "Progress: ${todo.progress}%   "),
+
+                              TextSpan(
+                                text: "Start: ${formatDate(todo.startDate)}   ",
+                              ),
 
                               TextSpan(
                                 text: "Due: ${formatDate(todo.dueDate)}",

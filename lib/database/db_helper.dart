@@ -39,7 +39,7 @@ class DBHelper {
 
   static final DBHelper instance = DBHelper._privateConstructor();
 
-  static const int _dbVersion = 4;
+  static const int _dbVersion = 5;
   static const String _dbName = "todo.db";
 
   static Database? _database;
@@ -92,6 +92,7 @@ class DBHelper {
         work_id TEXT,
         ref TEXT,
         priority TEXT,
+        start_date TEXT,
         due_date TEXT,
         progress INTEGER,
         task_date TEXT,
@@ -122,6 +123,10 @@ class DBHelper {
       await db.execute('ALTER TABLE todos ADD COLUMN due_date TEXT');
 
       await db.execute('ALTER TABLE todos ADD COLUMN task_date TEXT');
+    }
+
+    if (oldVersion < 5) {
+      await db.execute('ALTER TABLE todos ADD COLUMN start_date TEXT');;
     }
   }
 

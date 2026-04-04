@@ -26,6 +26,7 @@ import '../models/todo.dart';
 import '../database/db_helper.dart';
 import 'package:intl/intl.dart';
 import '../widgets/todo_card.dart';
+import '../services/todo_logic.dart';
 
 enum FilterType { all, active, completed, priority, due }
 
@@ -81,6 +82,7 @@ Tidak disimpan ke database (V1).
   final FocusNode quickFocus = FocusNode();
 
   String? priority;
+  DateTime? startDate;
   DateTime? dueDate;
   int progress = 0;
 
@@ -170,6 +172,7 @@ Tidak disimpan ke database (V1).
       workId: workController.text,
       ref: refController.text,
       priority: priority ?? "M",
+      startDate: startDate,
       dueDate: dueDate,
       progress: progress,
       taskDate: DateTime.now(),
@@ -241,6 +244,7 @@ dueDate = null
       workId: workController.text,
       ref: refController.text,
       priority: priority ?? "M",
+      startDate: startDate,
       dueDate: dueDate,
       progress: progress,
       taskDate: todo.taskDate,
@@ -634,6 +638,7 @@ Mengambil task yang ditandai sebagai fokus hari ini.
       workController.text = todo.workId ?? "";
       refController.text = todo.ref ?? "";
       priority = todo.priority;
+      startDate = todo.startDate;
       dueDate = todo.dueDate;
       progress = todo.progress ?? 0;
     } else {
@@ -643,6 +648,7 @@ Mengambil task yang ditandai sebagai fokus hari ini.
 
       priority = "M";
       progress = 0;
+      startDate = todo?.startDate ?? DateTime.now();
       dueDate = DateTime.now();
     }
 
@@ -731,9 +737,45 @@ Mengambil task yang ditandai sebagai fokus hari ini.
 
                       /*
 ============================================================
-DUE DATE PICKER
+START & DUE DATE PICKER
 ============================================================
 */
+                      Row(
+                        children: [
+                          const Text(
+                            "Start Date:",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(width: 12),
+
+                          Text(
+                            startDate == null
+                                ? "Not set"
+                                : "${startDate!.year}-${startDate!.month.toString().padLeft(2, '0')}-${startDate!.day.toString().padLeft(2, '0')}",
+                          ),
+
+                          const Spacer(),
+
+                          TextButton(
+                            child: const Text("Pick Date"),
+                            onPressed: () async {
+                              final picked = await showDatePicker(
+                                context: context,
+                                initialDate: startDate ?? DateTime.now(),
+                                firstDate: DateTime(2020),
+                                lastDate: DateTime(2100),
+                              );
+
+                              if (picked != null) {
+                                setStateDialog(() {
+                                  startDate = picked;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+
                       Row(
                         children: [
                           const Text(
@@ -1143,6 +1185,7 @@ Menampilkan task yang dipilih sebagai fokus hari ini.
                         "Ref: ${todo.ref}  "
                         "Priority: ${priorityLabels[todo.priority]}  "
                         "Progress: ${todo.progress}%  "
+                        "Start: ${formatDate(todo.startDate)}  "
                         "Due: ${formatDate(todo.dueDate)}";
 
                     return Row(
@@ -1252,10 +1295,7 @@ Menampilkan task yang dipilih sebagai fokus hari ini.
                             "Due: ${formatDate(todo.dueDate)}";
                       }
 
-                      final isOverdue =
-                          todo.dueDate != null &&
-                          todo.dueDate!.isBefore(DateTime.now()) &&
-                          !todo.isDone;
+                      final isOverdue = TodoLogic.isOverdue(todo);
 
                       return TodoCard(
                         todo: todo,

@@ -178,7 +178,7 @@ class Todo {
 
   dueDate → inspection date
   */
-
+  final DateTime? startDate;
   final DateTime? dueDate;
 
   /*
@@ -240,6 +240,7 @@ Tanggal task selesai.
     this.workId,
     this.ref,
     required this.priority,
+    this.startDate,
     this.dueDate,
     this.progress,
     required this.taskDate,
@@ -277,6 +278,7 @@ Tanggal task selesai.
       'work_id': workId,
       'ref': ref,
       'due_date': dueDate?.toIso8601String(),
+      'start_date': startDate?.toIso8601String(),
       'progress': progress,
       'task_date': taskDate.toIso8601String(),
       'completed_at': completedAt?.toIso8601String(),
@@ -313,6 +315,9 @@ Tanggal task selesai.
       priority: map['priority'], // ← diperbaiki
       workId: map['work_id'],
       ref: map['ref'],
+      startDate: map['start_date'] != null
+          ? DateTime.parse(map['start_date'])
+          : null,
       dueDate: map['due_date'] != null ? DateTime.parse(map['due_date']) : null,
       progress: map['progress'],
       taskDate: map['task_date'] != null
