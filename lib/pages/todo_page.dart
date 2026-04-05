@@ -148,25 +148,23 @@ Tidak disimpan ke database (V1).
   */
 
   Future<void> loadTodos() async {
-  final data = await dbHelper.getTodos();
+    final data = await dbHelper.getTodos();
 
-  setState(() {
-    todos = data;
+    setState(() {
+      todos = data;
 
-    // 🔥 SORT pakai getDiff()
-    todos.sort((a, b) {
-      return getDiff(a.startDate).compareTo(getDiff(b.startDate));
+      // 🔥 SORT pakai getDiff()
+      todos.sort((a, b) {
+        return getDiff(a.startDate).compareTo(getDiff(b.startDate));
+      });
     });
-  });
-}
+  }
 
-int getDiff(DateTime? date) {
-  if (date == null) return 9999; // biar taruh di bawah
-  final now = DateTime.now();
-  return date.difference(now).inDays;
-}
-
-
+  int getDiff(DateTime? date) {
+    if (date == null) return 9999; // biar taruh di bawah
+    final now = DateTime.now();
+    return date.difference(now).inDays;
+  }
 
   /*
   ============================================================
@@ -466,11 +464,11 @@ dueDate = null
 
   // SORTING START DATE THE CLOSER THE UPPER
 
- void sortTodos() {
-  todos.sort((a, b) {
-    return getDiff(a.startDate).compareTo(getDiff(b.startDate));
-  });
-}
+  void sortTodos() {
+    todos.sort((a, b) {
+      return getDiff(a.startDate).compareTo(getDiff(b.startDate));
+    });
+  }
 
   Widget filterText(String label, FilterType type) {
     final selected = currentFilter == type;
@@ -690,8 +688,12 @@ Mengambil task yang ditandai sebagai fokus hari ini.
                     children: [
                       TextField(
                         controller: descController,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 2,
+                        maxLines: null,
                         decoration: const InputDecoration(
                           labelText: "Description",
+                          alignLabelWithHint: true,
                         ),
                       ),
 
@@ -762,22 +764,34 @@ START & DUE DATE PICKER
 */
                       Row(
                         children: [
-                          const Text(
-                            "Start Date:",
-                            style: TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(width: 12),
-
-                          Text(
-                            startDate == null
-                                ? "Not set"
-                                : "${startDate!.year}-${startDate!.month.toString().padLeft(2, '0')}-${startDate!.day.toString().padLeft(2, '0')}",
+                          // Label
+                          SizedBox(
+                            width: 60,
+                            child: Text(
+                              "Start",
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
                           ),
 
-                          const Spacer(),
+                          // Titik dua
+                          const Text(":"),
 
+                          const SizedBox(width: 8),
+
+                          // Tanggal (fleksibel)
+                          Expanded(
+                            child: Text(
+                              startDate == null
+                                  ? "Not set"
+                                  : "${startDate!.day.toString().padLeft(2, '0')}-"
+                                        "${startDate!.month.toString().padLeft(2, '0')}-"
+                                        "${startDate!.year}",
+                            ),
+                          ),
+
+                          // Tombol
                           TextButton(
-                            child: const Text("Pick Date"),
+                            child: const Text("Pick"),
                             onPressed: () async {
                               final picked = await showDatePicker(
                                 context: context,
@@ -798,23 +812,29 @@ START & DUE DATE PICKER
 
                       Row(
                         children: [
-                          const Text(
-                            "Due Date:",
-                            style: TextStyle(fontWeight: FontWeight.w500),
+                          SizedBox(
+                            width: 60,
+                            child: Text(
+                              "Due",
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
                           ),
 
-                          const SizedBox(width: 12),
+                          const Text(":"),
+                          const SizedBox(width: 8),
 
-                          Text(
-                            dueDate == null
-                                ? "Not set"
-                                : "${dueDate!.year}-${dueDate!.month.toString().padLeft(2, '0')}-${dueDate!.day.toString().padLeft(2, '0')}",
+                          Expanded(
+                            child: Text(
+                              dueDate == null
+                                  ? "Not set"
+                                  : "${dueDate!.day.toString().padLeft(2, '0')}-"
+                                        "${dueDate!.month.toString().padLeft(2, '0')}-"
+                                        "${dueDate!.year}",
+                            ),
                           ),
-
-                          const Spacer(),
 
                           TextButton(
-                            child: const Text("Pick Date"),
+                            child: const Text("Pick"),
                             onPressed: () async {
                               final picked = await showDatePicker(
                                 context: context,
