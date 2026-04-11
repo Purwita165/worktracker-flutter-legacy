@@ -3,29 +3,52 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationService {
+  static final NotificationService _instance = NotificationService._internal();
 
-  Future<void> schedule({
-    required int id,
-    required String title,
-    required String body,
-    required DateTime scheduledTime,
-  }) async {
-    await _plugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tz.TZDateTime.from(scheduledTime, tz.local),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'reminder',
-          'Reminder',
-          importance: Importance.high,
-          priority: Priority.high,
-        ),
-      ),
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      androidAllowWhileIdle: true,
+  factory NotificationService() => _instance;
+
+  NotificationService._internal();
+
+  final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
+
+  Future<void> init() async {
+    print("INIT 1");
+
+    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const settings = InitializationSettings(android: android);
+
+    await _plugin.initialize(settings);
+
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.requestNotificationsPermission();
+
+    print("INIT 2");
+  }
+
+  Future<void> testNow() async {
+    print("TEST NOTIF DIPANGGIL");
+
+    const androidDetails = AndroidNotificationDetails(
+      'tes_channel_fix_final',
+      'Tes Channel Fix Final',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+    );
+
+    const details = NotificationDetails(android: androidDetails);
+
+    await _plugin.show(
+      1001,
+      '🔥 FINAL TEST',
+      'Kalau ini muncul & stay → DONE',
+      details,
     );
   }
 
@@ -33,44 +56,36 @@ class NotificationService {
     await _plugin.cancelAll();
   }
 
-final FlutterLocalNotificationsPlugin _plugin =
-    FlutterLocalNotificationsPlugin();
+  Future<void> schedule({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledTime,
+  }) async {
+    final androidDetails = AndroidNotificationDetails(
+      'super_channel_v999', // GANTI TOTAL
+      'Super Channel',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+      visibility: NotificationVisibility.public,
+      fullScreenIntent: true,
+    );
 
-Future<void> init() async {
-  print("INIT 1");
+    final details = NotificationDetails(android: androidDetails);
 
-  const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    await _plugin.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(scheduledTime, tz.local),
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
 
-  const settings = InitializationSettings(
-    android: android,
-  );
-
-  await _plugin.initialize(settings);
-
-  print("INIT 2");
-}
-
-Future<void> testNow() async {
-  print("TEST NOTIF DIPANGGIL");
-
-  const androidDetails = AndroidNotificationDetails(
-    'tes_channel_v2',
-    'Tes Channel V2',
-    importance: Importance.max,
-    priority: Priority.high,
-    playSound: true,
-    enableVibration: true,
-  );
-
-  const details = NotificationDetails(android: androidDetails);
-
-  await _plugin.show(
-    999,
-    'TEST LANGSUNG',
-    'Kalau ini muncul, notif OK',
-    details,
-  );
-}
-
-
+    print("JADWAL KE: $scheduledTime");
+  }
 }

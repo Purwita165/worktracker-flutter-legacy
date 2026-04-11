@@ -9,15 +9,9 @@ import 'package:timezone/timezone.dart' as tz;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  print("STEP 1");
-
   tzdata.initializeTimeZones();
 
-  print("STEP 2");
-
-  NotificationService().init(); // TANPA await
-
-  print("STEP 3");
+  await NotificationService().init();
 
   runApp(const MyApp());
 }
@@ -27,18 +21,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  
-
     return MaterialApp(
       /*
       Menghilangkan tulisan DEBUG di pojok kanan atas
       */
       debugShowCheckedModeBanner: false,
 
-
       title: 'WorkTracker_v1',
 
-        home: const TodoPage(),
+      home: const TodoPage(),
     );
   }
 }

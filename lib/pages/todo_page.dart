@@ -137,9 +137,16 @@ void initState() {
 
   loadTodos();
 
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    print("POST FRAME TERPANGGIL");
-    NotificationService().testNow();
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    print("POST FRAME");
+
+    await NotificationService().schedule(
+
+      id : 999,
+      title: "TES SCHEDULE",
+      body: "MUNCUL 5 DETIK",
+      scheduledTime: DateTime.now().add(Duration(seconds: 10)),
+    );
   });
 
   quickController.addListener(() {
